@@ -29,13 +29,12 @@ patch(PaymentScreen.prototype, {
         // If there is a printer IP and it's not an invoice, send the order to the fiscal printer
         if (this.pos.config.printer_ip && !order.is_to_invoice()) {
 
-            // TODO
-            // if (order.has_refund && this.pos.context && this.pos.context.refund_details) {
-            //     order.refund_date = this.pos.context.refund_date;
-            //     order.refund_report = this.pos.context.refund_report;
-            //     order.refund_doc_num = this.pos.context.refund_doc_num;
-            //     order.refund_cash_fiscal_serial = this.pos.context.refund_cash_fiscal_serial;
-            // }
+            if (order.has_refund && this.pos.context && this.pos.context.refund_details) {
+                order.refund_date = this.pos.context.refund_date;
+                order.refund_report = this.pos.context.refund_report;
+                order.refund_doc_num = this.pos.context.refund_doc_num;
+                order.refund_cash_fiscal_serial = this.pos.context.refund_cash_fiscal_serial;
+            }
 
             const receipt = order.export_as_JSON();
             this.fp90.order = order
