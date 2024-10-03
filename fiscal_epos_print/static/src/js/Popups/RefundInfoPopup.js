@@ -45,7 +45,7 @@ class RefundInfoPopup extends AbstractAwaitablePopup {
                 refund_full_refund: refund_full_refund,
             };
 
-            this.env.pos.set_refund_data(
+            order = this.env.pos.set_refund_data(
                 refund_date,
                 refund_report,
                 refund_doc_num,

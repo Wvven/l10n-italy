@@ -5,38 +5,110 @@ import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
 import { ErrorPopup } from "@point_of_sale/app/errors/popups/error_popup";
 import { roundPrecision as round_pr } from "@web/core/utils/numbers";
+import { PosStore } from "@point_of_sale/app/store/pos_store";
 
-// vedi PosStore, forse
-// class FiscalEposPrintPosGlobalState extends PosGlobalState {
-//     set_refund_data(refund_date, refund_report, refund_doc_num, refund_cash_fiscal_serial, refund_full_refund) {
-//         const selectedOrder = this.get_order();
-//         selectedOrder.refund_date = refund_date;
-//         selectedOrder.refund_report = refund_report;
-//         selectedOrder.refund_doc_num = refund_doc_num;
-//         selectedOrder.refund_cash_fiscal_serial = refund_cash_fiscal_serial;
-//         selectedOrder.refund_full_refund = refund_full_refund;
-//     }
+var set_refund_info_button = screens.ActionButtonWidget.extend({
+    template: 'SetRefundInfoButton',
+    init: function(parent, options) {
+        var self = this;
+        this._super(parent, options);
+        this.pos.bind('change:selectedOrder',function(){
+            this.orderline_change();
+            this.bind_order_events();
+        },this);
+        this.bind_order_events();
+        this.orderline_change();
+    },
+    renderElement: function() {
+        this._super();
+        var color = this.refund_get_button_color();
+        this.$el.css('background', color);
+    },
+    button_click: function () {
+        var self = this;
+        var current_order = self.pos.get_order();
+        self.gui.show_popup('refundinfo', {
+            title: _t('Refund Information Details'),
+            refund_date: current_order.refund_date,
+            refund_report: current_order.refund_report,
+            refund_doc_num: current_order.refund_doc_num,
+            refund_cash_fiscal_serial: current_order.refund_cash_fiscal_serial,
+            update_refund_info_button: function(){
+                self.renderElement();
+            },
+        });
+    },
+    bind_order_events: function() {
+        var self = this;
+        var order = this.pos.get_order();
 
-//     set_lottery_code_data(lottery_code) {
-//         const selectedOrder = this.get_order();
-//         selectedOrder.lottery_code = lottery_code;
-//     }
+        if (!order) {
+            return;
+        }
 
-//     reset_cashier() {
-//         this.cashier = {
-//             name: null,
-//             id: null,
-//             barcode: null,
-//             user_id: null,
-//             pin: null,
-//             role: null,
-//             fiscal_operator_number: null,
-//         };
-//     }
-// }
+        if(this.old_order) {
+            this.old_order.unbind(null,null,this);
+        }
 
-// Register the extended PosGlobalState class
-//registry.category("models").add("PosGlobalState", FiscalEposPrintPosGlobalState);
+        this.pos.bind('change:selectedOrder', this.orderline_change, this);
+
+        var lines = order.orderlines;
+            lines.unbind('add',     this.orderline_change, this);
+            lines.bind('add',       this.orderline_change, this);
+            lines.unbind('remove',  this.orderline_change, this);
+            lines.bind('remove',    this.orderline_change, this);
+            lines.unbind('change',  this.orderline_change, this);
+            lines.bind('change',    this.orderline_change, this);
+
+        this.old_order = order;
+    },
+    refund_get_button_color: function() {
+        var order = this.pos.get_order();
+        var color = '#e2e2e2';
+        if(order) {
+            var lines = order.orderlines;
+            var has_refund = lines.find(function(line){ return line.quantity < 0.0;}) != undefined;
+            if (has_refund == true)
+            {
+                if (order.refund_date && order.refund_date != '' && order.refund_doc_num && order.refund_doc_num != '' &&
+                    order.refund_cash_fiscal_serial && order.refund_cash_fiscal_serial != '' && order.refund_report && order.refund_report != '') {
+                        color = 'lightgreen';
+                }
+                else
+                {
+                    color = 'red';
+                }
+            }
+        }
+        return color;
+    },
+    orderline_change: function(){
+        var order = this.pos.get_order();
+        if (order) {
+            var lines = order.orderlines;
+            order.has_refund = lines.find(function(line){ return line.quantity < 0.0;}) != undefined;
+        }
+        this.renderElement();
+    },
+});
+
+screens.define_action_button({
+    'name': 'set_refund_info',
+    'widget': set_refund_info_button,
+});
+
+
+
+patch(PosStore.prototype, {
+    set_refund_data(refund_date, refund_report, refund_doc_num, refund_cash_fiscal_serial, refund_full_refund) {
+        const selectedOrder = this.get_order();
+        selectedOrder.refund_date = refund_date;
+        selectedOrder.refund_report = refund_report;
+        selectedOrder.refund_doc_num = refund_doc_num;
+        selectedOrder.refund_cash_fiscal_serial = refund_cash_fiscal_serial;
+        selectedOrder.refund_full_refund = refund_full_refund;
+    }
+});
 
 patch(Order.prototype, {
     setup() {

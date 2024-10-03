@@ -45,6 +45,8 @@
             # # Popups
             # "fiscal_epos_print/static/src/js/Popups/LotteryCodePopup.js",
             "fiscal_epos_print/static/src/js/Popups/RefundInfoPopup.js",
+            # # Buttons
+            "fiscal_epos_print/static/src/js/Buttons/RefundButton.js",
             # # Screens
             "fiscal_epos_print/static/src/js/Screens/PaymentScreen/PaymentScreen.js",
             #"fiscal_epos_print/static/src/js/Screens/ReceiptScreen/ReceiptScreen.js",
