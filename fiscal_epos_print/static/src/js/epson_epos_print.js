@@ -95,6 +95,7 @@ export class EpsonEposPrint {
                 order.fiscal_receipt_number = parseInt(addInfo.fiscalReceiptNumber, 10);
                 order.fiscal_receipt_amount = parseFloat(addInfo.fiscalReceiptAmount.replace(",", "."));
                 const fiscalReceiptDate = new Date(addInfo.fiscalReceiptDate.replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/, "$3/$2/$1"));
+                fiscalReceiptDate.setHours(fiscalReceiptDate.getHours() + 2);
                 order.fiscal_receipt_date = fiscalReceiptDate.toISOString().slice(0, 10);
                 order.fiscal_z_rep_number = addInfo.zRepNumber;
                 order.fiscal_printer_serial = this.pos.config.fiscal_printer_serial;
