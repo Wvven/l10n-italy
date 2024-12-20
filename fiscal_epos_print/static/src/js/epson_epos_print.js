@@ -146,10 +146,7 @@ export class EpsonEposPrint {
         return string.replace(/([&"<>])/g, (str, item) => xmlSpecialMap[item]);
     }
 
-    printRecItem(args) {
-        const tag = `<printRecItem description="${this.encodeXml(args.description || "")}" quantity="${args.quantity || "0"}" unitPrice="${args.unitPrice || ""}" department="${args.department || "1"}" justification="${args.justification || "1"}" operator="${args.operator || "1"}" />`;
-        return tag;
-    }
+    
 
     printFiscalReceipt(receipt) {
         const hasRefund = receipt.lines.every((line) => line[2].qty < 0);
@@ -358,10 +355,10 @@ export class EpsonEposPrint {
         this.encodeXml(args.description || "") +
         '"' +
         ' quantity="' +
-        (args.quantity || "1") +
+        (args.quantity || "0") +
         '"' +
         ' unitPrice="' +
-        (args.unitPrice || "") +
+        (args.unitPrice || "0") +
         '"' +
         ' department="' +
         (args.department || "1") +

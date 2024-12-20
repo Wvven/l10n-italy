@@ -66,6 +66,15 @@ patch(PaymentScreen.prototype, {
 
         const receipt = this.state.order;
 
+        //Add check for order that have products with qty = 0
+        if (receipt.orderlines.some((line) => line.quantity = 0)) {
+            this.popup.add(ErrorPopup, {
+                title: _t("Invalid Order"),
+                body: _t("Order contains products with quantity less than or equal to 0."),
+            });
+            return false;
+        }
+
         // TODO
         // // Validate refund information
         // if (
