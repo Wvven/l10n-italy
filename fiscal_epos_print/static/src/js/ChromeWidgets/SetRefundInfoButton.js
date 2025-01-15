@@ -37,12 +37,10 @@ odoo.define("fiscal_epos_print.SetRefundInfoButton", function (require) {
                     ),
                 });
             }
-            var dd = ("0" + current_order.refund_date.getDate()).slice(-2);
-            var mm = ("0" + (current_order.refund_date.getMonth() + 1)).slice(-2);
-            var yyyy = current_order.refund_date.getFullYear();
+
             this.showPopup("RefundInfoPopup", {
                 title: _t("Refund Information Details"),
-                refund_date: yyyy + "-" + mm + "-" + dd,
+                refund_date: current_order.refund_date,
                 refund_report: current_order.refund_report,
                 refund_doc_num: current_order.refund_doc_num,
                 refund_cash_fiscal_serial: current_order.refund_cash_fiscal_serial,
