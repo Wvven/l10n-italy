@@ -711,21 +711,40 @@ odoo.define("fiscal_epos_print.epson_epos_print", function (require) {
                     receipt.lottery_code.padEnd(16, " ") +
                     '0000" />';
             }
-            if (receipt.rounding_applied !== 0 && !has_refund) {
-                xml += self.printRounding({
-                    amount: Math.abs(
-                        round_pr(
-                            receipt.rounding_applied,
-                            self.sender.env.pos.currency.rounding
-                        )
-                    ),
-                    operator: fiscal_operator,
-                });
-                xml +=
-                    '<printRecSubtotal operator="' +
-                    fiscal_operator +
-                    '" option="1" />';
+            // Different type of roundings
+            // Inserting a line in the products list with the rounding applied
+            // if (receipt.rounding_applied !== 0 && !has_refund) {
+            //     xml += self.printRounding({
+            //         amount: Math.abs(
+            //             round_pr(
+            //                 receipt.rounding_applied,
+            //                 self.sender.env.pos.currency.rounding
+            //             )
+            //         ),
+            //         operator: fiscal_operator,
+            //     });
+            //     xml +=
+            //         '<printRecSubtotal operator="' +
+            //         fiscal_operator +
+            //         '" option="1" />';
+            // }
+
+            //Check for roundings Payments
+            //If it's needed, adds a payment line with payment method type 6 in case of a rounding
+            if (receipt.subtotal != receipt.total_paid && !has_refund) {
+                let payment_round = 0;
+                if (receipt.total_paid  < receipt.subtotal) {
+                    payment_round = round_pr(
+                        (receipt.subtotal  - receipt.total_paid), self.sender.env.pos.currency.rounding
+                    );
+                    xml += this.printRecTotal({
+                        payment: Math.abs(payment_round),
+                        paymentType: "6",
+                        operator: fiscal_operator,
+                    });
+                } 
             }
+
             // TODO is always the same Total for refund and payments?
             receipt.ticket = "";
             _.each(receipt.paymentlines, function (l) {
