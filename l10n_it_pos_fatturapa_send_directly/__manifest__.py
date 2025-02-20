@@ -4,11 +4,11 @@
 {
     "name": "ITA - POS - Fattura elettronica - Invio diretto",
     "summary": "Inviare automaticamente a SDI la fattura elettronica dal POS",
-    "version": "12.0.2.0.0",
+    "version": "16.0.1.0.0",
     "development_status": "Beta",
     "category": "Point Of Sale",
     "website": "https://github.com/OCA/l10n-italy"
-               "/tree/12.0/l10n_it_pos_fatturapa_send_directly",
+    "/tree/12.0/l10n_it_pos_fatturapa_send_directly",
     "author": "TAKOBI, Odoo Community Association (OCA)",
     "maintainers": ["eLBati"],
     "license": "AGPL-3",
@@ -19,8 +19,6 @@
         "l10n_it_pos_fatturapa",
         "l10n_it_sdi_channel",
     ],
-    'qweb': [
-    ],
-    'data': [
-    ],
+    "qweb": [],
+    "data": [],
 }

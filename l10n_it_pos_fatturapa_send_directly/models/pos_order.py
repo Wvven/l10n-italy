@@ -1,4 +1,4 @@
-from odoo import models, api
+from odoo import api, models
 
 
 class Order(models.Model):
@@ -9,16 +9,22 @@ class Order(models.Model):
 
     @api.model
     def create_from_ui(self, orders):
-        order_ids = super(Order, self).create_from_ui(orders)
+        order_ids = super().create_from_ui(orders)
         for order in self.browse(order_ids):
-            if (
-                order.invoice_id and
-                order.invoice_id.state in ("open", "in_payment", "paid")
+            if order.invoice_id and order.invoice_id.state in (
+                "open",
+                "in_payment",
+                "paid",
             ):
-                wizard = self.env["wizard.export.fatturapa"].with_context(
-                    active_id=order.invoice_id.id, active_ids=order.invoice_id.ids,
-                    active_model="account.invoice"
-                ).create({})
+                wizard = (
+                    self.env["wizard.export.fatturapa"]
+                    .with_context(
+                        active_id=order.invoice_id.id,
+                        active_ids=order.invoice_id.ids,
+                        active_model="account.invoice",
+                    )
+                    .create({})
+                )
                 wizard.exportFatturaPA()
                 order._send_e_invoice()
         return order_ids
